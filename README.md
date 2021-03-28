@@ -1,2 +1,4 @@
 # plagchecker
-Source code plagiarism checker with multiple DL algorithms
+
+Сервис для проверки исходного кода лабораторных на списывание. Сохраняет сданные лабораторные, сравнивает новые с имеющимися при помощи DL алгоритмов
+
