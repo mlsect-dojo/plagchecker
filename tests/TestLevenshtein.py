@@ -13,3 +13,6 @@ class TestLevenshteinDistance(unittest.TestCase):
         self.assertNotEqual((distance('Spisannaya laba','spisannaya_laba')), 0)
         self.assertEqual((distance('Nastoyawaya laba', 'nastoyawaya_laba')), 2)
 
+
+if __name__ == "__main__":
+    unittest.main()

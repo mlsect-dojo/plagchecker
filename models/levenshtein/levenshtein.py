@@ -18,7 +18,7 @@ def distance(str1, str2):
 
     return current_row[n]
 
-if __name__ == "main":
+if __name__ == "__main__":
     str1 = input()
     str2 = input()
     tmp = max(len(str1), len(str2))
