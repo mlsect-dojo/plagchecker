@@ -18,3 +18,9 @@ def distance(str1, str2):
 
     return current_row[n]
 
+if __name__ == "main":
+    str1 = input()
+    str2 = input()
+    tmp = max(len(str1), len(str2))
+    d = distance(str1, str2)
+    print(100 - d * 100 / tmp, end=" %")
