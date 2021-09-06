@@ -65,7 +65,7 @@ paths:
               
                 
   /score/all:
-    get:
+    post:
       tags:
       - algorithms
       description: "Сравнение всеми реализованными алгоритмами"
@@ -108,7 +108,7 @@ paths:
                   
 
   /score/levenstein:
-    get:
+    post:
       tags:
       - algorithms
       description: "Сравнение алгоритмом Левенштейна"

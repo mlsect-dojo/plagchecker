@@ -1,0 +1,6 @@
+aiosqlite>=0.17.0
+fastapi>=0.68.1
+python-multipart>=0.0.5
+wheel>=0.37.0
+uvicorn>=0.15.0
+aiofiles>=0.7.0
