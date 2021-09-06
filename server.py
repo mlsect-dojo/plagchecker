@@ -5,7 +5,7 @@ import aiofiles
 import aiofiles.os
 import uvicorn
 
-from api.utils.db import SQLite
+from api.utils.db import SQLiteConnector
 
 server = FastAPI()
 
@@ -16,13 +16,13 @@ async def save_lab(archive: UploadFile = File(...)):
     async with aiofiles.open(f'{pathlib.Path(__file__).parent.resolve()}/api/labs/{filename}', 'wb') as file:
         await file.write(data)
 
-    lab_id = await SQLite.insert_lab(f'{filename}')
+    lab_id = await SQLiteConnector.insert_lab(f'{filename}')
 
     return {'id': lab_id}
 
 @server.delete('/lab')
 async def delete_lab(lab_id: int):
-    path = await SQLite.delete_lab(lab_id)
+    path = await SQLiteConnector.delete_lab(lab_id)
 
     if path:
         await aiofiles.os.remove(f'{pathlib.Path(__file__).parent.resolve()}/api/labs/{path}')
