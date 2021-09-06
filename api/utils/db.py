@@ -5,7 +5,7 @@ class SQLiteConnector():
     db_path = f'{pathlib.Path(__file__).parent.parent.resolve()}/plagchecker.db'
 
     @classmethod
-    async def insert_lab(cls, filename: str):
+    async def insert_lab(cls, filename: str) -> int:
         async with aiosqlite.connect(cls.db_path) as db:
             await db.execute(f"INSERT INTO labs (path) VALUES ('{filename}');")
             await db.commit()
@@ -15,7 +15,7 @@ class SQLiteConnector():
         return row[0]
 
     @classmethod
-    async def delete_lab(cls, lab_id: int):
+    async def delete_lab(cls, lab_id: int) -> str:
         async with aiosqlite.connect(cls.db_path) as db:
             async with db.execute(f"SELECT path FROM labs WHERE id = {lab_id};") as cursor:
                 row = await cursor.fetchone()
