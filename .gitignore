@@ -129,11 +129,4 @@ dmypy.json
 .pyre/
 
 #api stuff
-api/bin
-api/include
-api/lib
-api/lib64
-api/share
-api/pyvenv.cfg
-api/__pycache__
 *.db
