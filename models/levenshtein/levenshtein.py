@@ -1,4 +1,4 @@
-def distance(str1, str2):
+def distance(str1: str, str2: str) -> float:
     """
         The Levenshtein distance is a string metric for measuring the difference between two sequences.
         It is calculated as the minimum number of single-character edits necessary to transform one string into another
@@ -17,10 +17,3 @@ def distance(str1, str2):
             current_row[j] = min(add, delete, change)
 
     return current_row[n]
-
-if __name__ == "__main__":
-    str1 = input()
-    str2 = input()
-    tmp = max(len(str1), len(str2))
-    d = distance(str1, str2)
-    print(100 - d * 100 / tmp, end=" %")

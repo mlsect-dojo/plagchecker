@@ -3,8 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-#idk what is this but ignore
+#specific settings files
 .idea
+/.idea
+.idea/
 
 # C extensions
 *.so
