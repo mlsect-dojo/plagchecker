@@ -62,23 +62,27 @@ paths:
             properties:
               status:
                 default: "OK"
-              
-                
+                   
   /score/all:
-    post:
+    get:
       tags:
       - algorithms
       description: "Сравнение всеми реализованными алгоритмами"
       consumes:
-      - multipart/form-data
+      - application/json
       produces:
       - application/json
       parameters:
-      - name: archive
-        description: "zip архив с файлами лабы"
-        in: formData
-        type: file
+      - name: lab_id
+        description: "id лабы в системе"
+        in: query
+        type: integer
         required: true
+      - name: limit
+        description: "ограничение результатов в выдаче"
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: "OK"
@@ -105,23 +109,26 @@ paths:
                             type: number
                             description: "мера схожести"
                             
-                  
-
   /score/levenstein:
-    post:
+    get:
       tags:
       - algorithms
       description: "Сравнение алгоритмом Левенштейна"
       consumes:
-      - multipart/form-data
+      - application/json
       produces:
       - application/json
       parameters:
-      - name: archive
-        description: "zip архив с файлами лабы"
-        in: formData
-        type: file
+      - name: lab_id
+        description: "id лабы в системе"
+        in: query
+        type: integer
         required: true
+      - name: limit
+        description: "ограничение результатов в выдаче"
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: "OK"

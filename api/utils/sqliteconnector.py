@@ -1,5 +1,6 @@
-import aiosqlite
 import pathlib
+
+import aiosqlite
 
 class SQLiteConnector():
     db_path = f'{pathlib.Path(__file__).parent.parent.resolve()}/plagchecker.db'
@@ -26,3 +27,19 @@ class SQLiteConnector():
             return row[0]
         else:
             return None
+
+    @classmethod
+    async def get_lab_id(cls, filename: str) -> int:
+        async with aiosqlite.connect(cls.db_path) as db:
+            async with db.execute(f"SELECT id FROM labs WHERE path = '{filename}';") as cursor:
+                row = await cursor.fetchone()
+
+        return row[0]
+
+    @classmethod
+    async def get_lab_filename(cls, lab_id: int) -> str:
+        async with aiosqlite.connect(cls.db_path) as db:
+            async with db.execute(f"SELECT path FROM labs WHERE id = '{lab_id}';") as cursor:
+                row = await cursor.fetchone()
+
+        return row[0]

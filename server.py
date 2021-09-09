@@ -1,11 +1,13 @@
-from fastapi import FastAPI, File, UploadFile
-import uuid
 import pathlib
+import uuid
+
 import aiofiles
 import aiofiles.os
 import uvicorn
+from fastapi import FastAPI, File, UploadFile
 
-from api.utils.db import SQLiteConnector
+from api.utils.checks import Checks
+from api.utils.sqliteconnector import SQLiteConnector
 
 server = FastAPI()
 
@@ -29,34 +31,15 @@ async def delete_lab(lab_id: int):
 
     return {'status': 'OK'}
 
-@server.post('/score/all')
-async def lab_score_all(archive: UploadFile = File(...)):
-    #do checks
-    return {
-        'similars': [
-            {
-                'algorithm': 'string',
-                'top': [
-                    {
-                        'id': 3,
-                        'score': 1
-                    }
-                ]
-            }
-        ]
-    }
+@server.get('/score/all')
+async def lab_score_all(lab_id: int, limit: int = None):
+    result = await Checks.check_all(lab_id, limit)
+    return result
 
-@server.post('/score/levenstein')
-async def lab_score_levenstein(archive: UploadFile = File(...)):
-    #do levenstein check
-    return {
-        'similars': [
-            {
-                'id': 0,
-                'score': 2
-            }
-        ]
-    }
+@server.get('/score/levenshtein')
+async def lab_score_levenshtein(lab_id: int, limit: int = None):
+    similars = await Checks.levenshtein_check(False, lab_id, limit)
+    return similars
 
 if __name__ == '__main__':
     uvicorn.run('server:server', port = 5050, reload = True)
