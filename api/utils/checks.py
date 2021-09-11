@@ -11,9 +11,8 @@ from models.levenshtein import levenshtein
 
 class Checks():
 
-    @classmethod
-    async def algorithm_check(cls, algorithm: Callable[['Checks', int, int], dict], list_order: bool, lab_id: int, limit: int = None) -> dict:
-        filename = await SQLiteConnector.get_lab_filename(lab_id)
+    async def algorithm_check(self, algorithm: Callable[['Checks', int, int], dict], list_order: bool, lab_id: int, limit: int = None) -> dict:
+        filename = await SQLiteConnector().get_lab_filename(lab_id)
         path = pathlib.Path(__file__).parent.parent.resolve()
 
         archive_dir = TemporaryDirectory(dir = f'{path}/labs')
@@ -50,7 +49,7 @@ class Checks():
                 lab_file_dir.cleanup()
 
                 distance = algorithm(code, lab)
-                lab_id = await SQLiteConnector.get_lab_id(lab_file)
+                lab_id = await SQLiteConnector().get_lab_id(lab_file)
                 similars.append({'id': lab_id, 'score': distance})
 
         similars_final = sorted(similars, key = lambda k: k['score'], reverse = list_order)
@@ -60,18 +59,15 @@ class Checks():
 
         return {'similars': similars_final[:limit]}
 
-    @classmethod
-    async def levenshtein_check(cls, list_order: bool, lab_id: int, limit: int = None) -> dict:
-        return await cls.algorithm_check(levenshtein.distance, list_order, lab_id, limit)
+    async def levenshtein_check(self, list_order: bool, lab_id: int, limit: int = None) -> dict:
+        return await self.algorithm_check(levenshtein.distance, list_order, lab_id, limit)
 
-    @classmethod
-    async def jaccard_check(cls, list_order: bool, lab_id: int, limit: int = None) -> dict:
-        return await cls.algorithm_check(jaccard.JaccardIndex, list_order, lab_id, limit)
+    async def jaccard_check(self, list_order: bool, lab_id: int, limit: int = None) -> dict:
+        return await self.algorithm_check(jaccard.JaccardIndex, list_order, lab_id, limit)
 
-    @classmethod
-    async def check_all(cls, lab_id: int, limit: int = None) -> dict:
-        top_levenshtein = await cls.levenshtein_check(False, lab_id, limit)
-        top_jaccard = await cls.jaccard_check(True, lab_id, limit)
+    async def check_all(self, lab_id: int, limit: int = None) -> dict:
+        top_levenshtein = await self.levenshtein_check(False, lab_id, limit)
+        top_jaccard = await self.jaccard_check(True, lab_id, limit)
         return {
             'similars': [
                 {

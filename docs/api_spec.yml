@@ -146,5 +146,3 @@ paths:
                     score:
                       type: number
                       description: "мера схожести"
-                  
-
