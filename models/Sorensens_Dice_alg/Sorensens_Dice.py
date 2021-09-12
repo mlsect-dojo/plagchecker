@@ -1,7 +1,5 @@
-def Sorensen_Dice_Coeff(str1: set, str2: set):
-    str1 = set(str1)
-    str2 = set(str2)
-
-    shared = str1.intersection(str2)
-
-    return (2 * len(shared) / (len(str1) + len(str2)))
+def sorensen_dice(first_phrase: str, second_phrase: str) -> float:
+    first_phrase = set(first_phrase)
+    second_phrase = set(second_phrase)
+    shared = first_phrase.intersection(second_phrase)
+    return 2 * len(shared) / (len(first_phrase) + len(second_phrase))
