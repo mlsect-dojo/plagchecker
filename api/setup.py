@@ -7,6 +7,8 @@ async def main():
         await db.execute("""CREATE TABLE IF NOT EXISTS labs (
             id INTEGER NOT NULL,
             path TEXT,
+            user_id INTEGER NOT NULL,
+            extension STRING NOT NULL,
             PRIMARY KEY (id AUTOINCREMENT)
         );""")
 

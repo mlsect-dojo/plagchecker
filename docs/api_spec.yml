@@ -26,6 +26,16 @@ paths:
       produces:
       - application/json
       parameters:
+      - name: user_id
+        description: "id автора лабы"
+        in: query
+        type: integer
+        required: true
+      - name: ext
+        description: "расширения языка лабы"
+        in: query
+        type: string
+        required: true
       - name: archive
         description: "zip архив с файлами лабы"
         in: formData

@@ -7,9 +7,9 @@ class SQLiteConnector():
     def __init__(self) -> None:
         self.db_path = f'{pathlib.Path(__file__).parent.parent.resolve()}/plagchecker.db'
 
-    async def insert_lab(self, filename: str) -> int:
+    async def insert_lab(self, filename: str, user_id: int, ext: str) -> int:
         async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(f"INSERT INTO labs (path) VALUES ('{filename}');")
+            await db.execute(f"INSERT INTO labs (path, user_id, extension) VALUES ('{filename}', {user_id}, '{ext}');")
             await db.commit()
             async with db.execute(f"SELECT id FROM labs WHERE path = '{filename}';") as cursor:
                 row = await cursor.fetchone()
@@ -28,16 +28,14 @@ class SQLiteConnector():
         else:
             return None
 
-    async def get_lab_id(self, filename: str) -> int:
+    async def get_lab_info_filename(self, filename: str) -> int:
         async with aiosqlite.connect(self.db_path) as db:
-            async with db.execute(f"SELECT id FROM labs WHERE path = '{filename}';") as cursor:
+            async with db.execute(f"SELECT * FROM labs WHERE path = '{filename}';") as cursor:
                 row = await cursor.fetchone()
+        return {'lab_id': row[0], 'filename': row[1], 'user_id': row[2], 'ext': row[3]}
 
-        return row[0]
-
-    async def get_lab_filename(self, lab_id: int) -> str:
+    async def get_lab_info_id(self, lab_id: int) -> str:
         async with aiosqlite.connect(self.db_path) as db:
-            async with db.execute(f"SELECT path FROM labs WHERE id = '{lab_id}';") as cursor:
+            async with db.execute(f"SELECT * FROM labs WHERE id = '{lab_id}';") as cursor:
                 row = await cursor.fetchone()
-
-        return row[0]
+        return {'lab_id': row[0], 'filename': row[1], 'user_id': row[2], 'ext': row[3]}

@@ -11,7 +11,7 @@
     ├── docs/               <- Specifications and papers
     ├── models/             <- Trained and serialized models, model sources
     ├── tests/              <- Models tests
-    ├── Pipfile             <- Pipfile for the web server
+    ├── Pipfile             <- Pipfile for the project
     ├── LICENSE
     ├── README.md           <- The top-level README for developers using this project.
     ├── server.py           <- Web server
