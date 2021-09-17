@@ -28,14 +28,20 @@ class SQLiteConnector():
         else:
             return None
 
-    async def get_lab_info_filename(self, filename: str) -> int:
+    async def get_lab_info_filename(self, filename: str) -> dict:
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(f"SELECT * FROM labs WHERE path = '{filename}';") as cursor:
                 row = await cursor.fetchone()
-        return {'lab_id': row[0], 'filename': row[1], 'user_id': row[2], 'ext': row[3]}
+        if row:
+            return {'lab_id': row[0], 'filename': row[1], 'user_id': row[2], 'ext': row[3]}
+        else:
+            return None
 
-    async def get_lab_info_id(self, lab_id: int) -> str:
+    async def get_lab_info_id(self, lab_id: int) -> dict:
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(f"SELECT * FROM labs WHERE id = '{lab_id}';") as cursor:
                 row = await cursor.fetchone()
-        return {'lab_id': row[0], 'filename': row[1], 'user_id': row[2], 'ext': row[3]}
+        if row:
+            return {'lab_id': row[0], 'filename': row[1], 'user_id': row[2], 'ext': row[3]}
+        else:
+            return None

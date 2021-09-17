@@ -34,29 +34,32 @@ class Checks():
 
     async def algorithm_check(self, algorithm: Callable[['Checks', int, int], dict], reverse: bool, lab_id: int, limit: int = None) -> dict:
         lab_info = await self.connector.get_lab_info_id(lab_id)
-        filename = lab_info['filename']
-        code = await self.unpack_archive(f'{self.path}/labs/{filename}', lab_info['ext'])
+        if lab_info:
+            filename = lab_info['filename']
+            code = await self.unpack_archive(f'{self.path}/labs/{filename}', lab_info['ext'])
 
-        lab_folder, lab_files = [file for file in os.walk(f'{str(self.path)}/labs')][-1][::2]
-        lab_expr = re.compile(r'.*\.(zip){1}$')
+            lab_folder, lab_files = [file for file in os.walk(f'{str(self.path)}/labs')][-1][::2]
+            lab_expr = re.compile(r'.*\.(zip){1}$')
 
-        similars = []
+            similars = []
 
-        for lab_file in lab_files:
-            if lab_expr.match(lab_file) and lab_file != filename:
-                comparison_lab_info = await self.connector.get_lab_info_filename(lab_file)
-                if comparison_lab_info['ext'] == lab_info['ext'] and comparison_lab_info['user_id'] != lab_info['user_id']:
-                    
-                    lab = await self.unpack_archive(f'{lab_folder}/{lab_file}', comparison_lab_info['ext'])
-                    distance = algorithm(code, lab)
-                    similars.append({'id': comparison_lab_info['lab_id'], 'score': distance})
+            for lab_file in lab_files:
+                if lab_expr.match(lab_file) and lab_file != filename:
+                    comparison_lab_info = await self.connector.get_lab_info_filename(lab_file)
+                    if comparison_lab_info['ext'] == lab_info['ext'] and comparison_lab_info['user_id'] != lab_info['user_id']:
+                        
+                        lab = await self.unpack_archive(f'{lab_folder}/{lab_file}', comparison_lab_info['ext'])
+                        distance = algorithm(code, lab)
+                        similars.append({'id': comparison_lab_info['lab_id'], 'score': distance})
 
-        similars_final = sorted(similars, key = lambda k: k['score'], reverse = reverse)
+            similars_final = sorted(similars, key = lambda k: k['score'], reverse = reverse)
 
-        if not limit:
-            limit = 10
+            if not limit:
+                limit = 10
 
-        return {'similars': similars_final[:limit]}
+            return {'similars': similars_final[:limit]}
+        else:
+            return []
 
     async def levenshtein_check(self, reverse: bool, lab_id: int, limit: int = None) -> dict:
         return await self.algorithm_check(levenshtein.distance, reverse, lab_id, limit)
