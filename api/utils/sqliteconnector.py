@@ -2,6 +2,7 @@ import pathlib
 
 import aiosqlite
 
+
 class SQLiteConnector():
 
     def __init__(self) -> None:
@@ -45,3 +46,17 @@ class SQLiteConnector():
             return {'lab_id': row[0], 'filename': row[1], 'user_id': row[2], 'ext': row[3]}
         else:
             return None
+
+    async def save_lab_score(self, lab_id: int, algorithm: str, results: list) -> None:
+        async with aiosqlite.connect(self.db_path) as db:
+            for id, score in results:
+                await db.execute(f"INSERT INTO results (compared, compared_to, algorithm, score) VALUES ({lab_id}, {id}, '{algorithm}', {score})")
+            await db.commit()
+
+    async def get_lab_score(self, lab_id: int, algorithm: str) -> list:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(f"SELECT * FROM results WHERE compared = '{lab_id}' AND algorithm = '{algorithm}';") as cursor:
+                rows = await cursor.fetchall()
+
+        result = [{'id': item[2], 'score': item[4]} for item in rows]
+        return result

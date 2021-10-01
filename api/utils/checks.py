@@ -66,22 +66,3 @@ class Checks():
 
     async def jaccard_check(self, reverse: bool, lab_id: int, limit: int = None) -> dict:
         return await self.algorithm_check(jaccard.JaccardIndex, reverse, lab_id, limit)
-
-    async def check_all(self, lab_id: int, limit: int = None) -> dict:
-        return {
-            'similars': [
-                {
-                    'algorithm': self.levenshtein_check.__name__,
-                    'top': [
-                        await self.levenshtein_check(False, lab_id, limit)
-                    ]
-                },
-                {
-                    'algorithm': self.jaccard_check.__name__,
-                    'top': [
-                        await self.jaccard_check(True, lab_id, limit)
-                    ]
-                }
-            ]
-        }
-        
