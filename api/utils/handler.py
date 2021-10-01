@@ -35,41 +35,50 @@ class Handler():
         levenshtein_result = await self.connector.get_lab_score(lab_id, 'levenshtein_check')
         
         if levenshtein_result != []:
-            levenshtein_score = {'similars': [{'id': result['id'], 'score': result['score']} for result in levenshtein_result]}
+            result_sorted = sorted(levenshtein_result, key = lambda k: k['score'], reverse = False)
+            levenshtein_score = {'similars': [{'id': result['id'], 'score': result['score']} for result in result_sorted]}
         else:
-            levenshtein_score = await self.checks.levenshtein_check(False, lab_id, limit)
+            levenshtein_score = await self.checks.levenshtein_check(False, lab_id)
             results = [(item['id'], item['score']) for item in levenshtein_score['similars']]
             await self.connector.save_lab_score(lab_id, self.checks.levenshtein_check.__name__, results)
 
-        return levenshtein_score
+        if not limit:
+            limit = 10
+
+        return {'similars': levenshtein_score['similars'][:limit]}
 
     async def lab_score_all(self, lab_id: int, limit: int = None) -> dict:
         levenshtein_result = await self.connector.get_lab_score(lab_id, self.checks.levenshtein_check.__name__)
         jaccard_result = await self.connector.get_lab_score(lab_id, self.checks.jaccard_check.__name__)
 
         if levenshtein_result != []:
-            levenshtein_score = {'similars': [{'id': result['id'], 'score': result['score']} for result in levenshtein_result]}
+            result_sorted = sorted(levenshtein_result, key = lambda k: k['score'], reverse = False)
+            levenshtein_score = {'similars': [{'id': result['id'], 'score': result['score']} for result in result_sorted]}
         else:
-            levenshtein_score = await self.checks.levenshtein_check(False, lab_id, limit)
+            levenshtein_score = await self.checks.levenshtein_check(False, lab_id)
             results = [(item['id'], item['score']) for item in levenshtein_score['similars']]
             await self.connector.save_lab_score(lab_id, self.checks.levenshtein_check.__name__, results)
 
         if jaccard_result != []:
-            jaccard_score = {'similars': [{'id': result['id'], 'score': result['score']} for result in jaccard_result]}
+            result_sorted = sorted(jaccard_result, key = lambda k: k['score'], reverse = True)
+            jaccard_score = {'similars': [{'id': result['id'], 'score': result['score']} for result in result_sorted]}
         else:
-            jaccard_score = await self.checks.jaccard_check(True, lab_id, limit)
+            jaccard_score = await self.checks.jaccard_check(True, lab_id)
             results = [(item['id'], item['score']) for item in jaccard_score['similars']]
             await self.connector.save_lab_score(lab_id, self.checks.jaccard_check.__name__, results)
+
+        if not limit:
+            limit = 10
 
         result = {
             'similars': [
                 {
                     'algorithm': self.checks.levenshtein_check.__name__,
-                    'top': levenshtein_score['similars']
+                    'top': levenshtein_score['similars'][:limit]
                 },
                 {
                     'algorithm': self.checks.jaccard_check.__name__,
-                    'top': jaccard_score['similars']
+                    'top': jaccard_score['similars'][:limit]
                 }
             ]
         }

@@ -9,6 +9,7 @@ from api.utils.sqliteconnector import SQLiteConnector
 from models.Jaccard import jaccard
 from models.levenshtein import levenshtein
 
+
 class Checks():
 
     def __init__(self) -> None:
@@ -32,7 +33,7 @@ class Checks():
 
         return code
 
-    async def algorithm_check(self, algorithm: Callable[['Checks', int, int], dict], reverse: bool, lab_id: int, limit: int = None) -> dict:
+    async def algorithm_check(self, algorithm: Callable[['Checks', int, int], dict], reverse: bool, lab_id: int) -> dict:
         lab_info = await self.connector.get_lab_info_id(lab_id)
         if lab_info:
             filename = lab_info['filename']
@@ -54,15 +55,12 @@ class Checks():
 
             similars_final = sorted(similars, key = lambda k: k['score'], reverse = reverse)
 
-            if not limit:
-                limit = 10
-
-            return {'similars': similars_final[:limit]}
+            return {'similars': similars_final}
         else:
             return []
 
-    async def levenshtein_check(self, reverse: bool, lab_id: int, limit: int = None) -> dict:
-        return await self.algorithm_check(levenshtein.distance, reverse, lab_id, limit)
+    async def levenshtein_check(self, reverse: bool, lab_id: int) -> dict:
+        return await self.algorithm_check(levenshtein.distance, reverse, lab_id)
 
-    async def jaccard_check(self, reverse: bool, lab_id: int, limit: int = None) -> dict:
-        return await self.algorithm_check(jaccard.JaccardIndex, reverse, lab_id, limit)
+    async def jaccard_check(self, reverse: bool, lab_id: int) -> dict:
+        return await self.algorithm_check(jaccard.JaccardIndex, reverse, lab_id)
