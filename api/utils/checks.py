@@ -33,7 +33,7 @@ class Checks():
 
         return code
 
-    async def algorithm_check(self, algorithm: Callable[['Checks', int, int], dict], reverse: bool, lab_id: int) -> dict:
+    async def algorithm_check(self, algorithm: Callable[['Checks', int, int], dict], lab_id: int) -> dict:
         lab_info = await self.connector.get_lab_info_id(lab_id)
         if lab_info:
             filename = lab_info['filename']
@@ -53,14 +53,12 @@ class Checks():
                         distance = algorithm(code, lab)
                         similars.append({'id': comparison_lab_info['lab_id'], 'score': distance})
 
-            similars_final = sorted(similars, key = lambda k: k['score'], reverse = reverse)
-
-            return {'similars': similars_final}
+            return similars
         else:
             return []
 
-    async def levenshtein_check(self, reverse: bool, lab_id: int) -> dict:
-        return await self.algorithm_check(levenshtein.distance, reverse, lab_id)
+    async def levenshtein_check(self, lab_id: int) -> dict:
+        return await self.algorithm_check(levenshtein.distance, lab_id)
 
-    async def jaccard_check(self, reverse: bool, lab_id: int) -> dict:
-        return await self.algorithm_check(jaccard.JaccardIndex, reverse, lab_id)
+    async def jaccard_check(self, lab_id: int) -> dict:
+        return await self.algorithm_check(jaccard.JaccardIndex, lab_id)

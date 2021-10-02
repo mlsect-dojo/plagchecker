@@ -42,7 +42,12 @@ class Handler():
         
         if levenshtein_result != []:
             result_sorted = sorted(levenshtein_result, key = lambda k: k['score'], reverse = False)
-            levenshtein_score = {'similars': [{'id': result['id'], 'score': result['score']} for result in result_sorted]}
+            levenshtein_score = {
+                'similars': [{
+                    'id': result['id'],
+                    'score': result['score']
+                } for result in result_sorted]
+            }
         else:
             levenshtein_score = await self.checks.levenshtein_check(False, lab_id)
             results = [(item['id'], item['score']) for item in levenshtein_score['similars']]
@@ -61,15 +66,24 @@ class Handler():
 
             if method_result != []:
                 result_sorted = sorted(method_result, key = lambda k: k['score'], reverse = reverse)
-                method_score = {'similars': [{'id': result['id'], 'score': result['score']} for result in result_sorted]}
+                method_score = {
+                    'similars': [{
+                        'id': result['id'],
+                        'score': result['score']
+                    } for result in result_sorted]
+                }
             else:
-                method_score = await method(reverse,  lab_id)
-                results = [(item['id'], item['score']) for item in method_score['similars']]
+                method_score = await method(lab_id)
+                method_score_sorted = sorted(method_result, key = lambda k: k['score'], reverse = reverse)
+                results = [(item['id'], item['score']) for item in method_score_sorted['similars']]
                 await self.connector.save_lab_score(lab_id, method.__name__, results)
             
             if not limit:
                 limit = 10
 
-            result['similars'].append({'algorithm': method.__name__, 'top': method_score['similars'][:limit]})
+            result['similars'].append({
+                'algorithm': method.__name__,
+                'top': method_score['similars'][:limit]
+            })
         
         return result
