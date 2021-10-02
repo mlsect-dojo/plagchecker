@@ -38,52 +38,43 @@ class Handler():
         return
 
     async def lab_score_levenshtein(self, lab_id: int, limit: int = None) -> dict:
-        levenshtein_result = await self.connector.get_lab_score(lab_id, 'levenshtein_check')
+        db_result = await self.connector.get_lab_score(lab_id, 'levenshtein_check')
         
-        if levenshtein_result != []:
-            result_sorted = sorted(levenshtein_result, key = lambda k: k['score'], reverse = False)
-            levenshtein_score = {
-                'similars': [{
-                    'id': result['id'],
-                    'score': result['score']
-                } for result in result_sorted]
-            }
+        if db_result != []:
+            result_sorted = sorted(db_result, key = lambda k: k['score'], reverse = False)
+            levenshtein_score = [{'id': result['id'], 'score': result['score']} for result in result_sorted]
         else:
-            levenshtein_score = await self.checks.levenshtein_check(False, lab_id)
-            results = [(item['id'], item['score']) for item in levenshtein_score['similars']]
+            check_result = await self.checks.levenshtein_check(False, lab_id)
+            levenshtein_score = sorted(check_result, key = lambda k: k['score'], reverse = False)
+            results = [(item['id'], item['score']) for item in levenshtein_score]
             await self.connector.save_lab_score(lab_id, self.checks.levenshtein_check.__name__, results)
 
         if not limit:
             limit = 10
 
-        return {'similars': levenshtein_score['similars'][:limit]}
+        return {'similars': levenshtein_score[:limit]}
 
     async def lab_score_all(self, lab_id: int, limit: int = None) -> dict:
         result = {'similars': []}
         
-        for method, reverse in self.methods:
-            method_result = await self.connector.get_lab_score(lab_id, method.__name__)
+        for algorithm, reverse in self.methods:
+            db_result = await self.connector.get_lab_score(lab_id, algorithm.__name__)
 
-            if method_result != []:
-                result_sorted = sorted(method_result, key = lambda k: k['score'], reverse = reverse)
-                method_score = {
-                    'similars': [{
-                        'id': result['id'],
-                        'score': result['score']
-                    } for result in result_sorted]
-                }
+            if db_result != []:
+                result_sorted = sorted(db_result, key = lambda k: k['score'], reverse = reverse)
+                algorithm_result = [{'id': result['id'], 'score': result['score']} for result in result_sorted]
             else:
-                method_score = await method(lab_id)
-                method_score_sorted = sorted(method_result, key = lambda k: k['score'], reverse = reverse)
-                results = [(item['id'], item['score']) for item in method_score_sorted['similars']]
-                await self.connector.save_lab_score(lab_id, method.__name__, results)
+                check_result = await algorithm(lab_id)
+                algorithm_result = sorted(check_result, key = lambda k: k['score'], reverse = reverse)
+                results = [(item['id'], item['score']) for item in algorithm_result]
+                await self.connector.save_lab_score(lab_id, algorithm.__name__, results)
             
             if not limit:
                 limit = 10
 
             result['similars'].append({
-                'algorithm': method.__name__,
-                'top': method_score['similars'][:limit]
+                'algorithm': algorithm.__name__,
+                'top': algorithm_result[:limit]
             })
         
         return result
