@@ -1,4 +1,5 @@
 import pathlib
+from typing import Union
 
 import aiosqlite
 
@@ -17,7 +18,7 @@ class SQLiteConnector():
 
         return row[0]
 
-    async def delete_lab(self, lab_id: int) -> str:
+    async def delete_lab(self, lab_id: int) -> Union[str, None]:
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(f"SELECT path FROM labs WHERE id = {lab_id};") as cursor:
                 row = await cursor.fetchone()
@@ -29,7 +30,7 @@ class SQLiteConnector():
         else:
             return None
 
-    async def get_lab_info_filename(self, filename: str) -> dict:
+    async def get_lab_info_filename(self, filename: str) -> Union[dict, None]:
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(f"SELECT * FROM labs WHERE path = '{filename}';") as cursor:
                 row = await cursor.fetchone()
@@ -38,7 +39,7 @@ class SQLiteConnector():
         else:
             return None
 
-    async def get_lab_info_id(self, lab_id: int) -> dict:
+    async def get_lab_info_id(self, lab_id: int) -> Union[dict, None]:
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(f"SELECT * FROM labs WHERE id = '{lab_id}';") as cursor:
                 row = await cursor.fetchone()

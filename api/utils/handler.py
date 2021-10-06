@@ -35,8 +35,6 @@ class Handler():
         if path:
             await aiofiles.os.remove(f'{pathlib.Path(__file__).parent.resolve()}/api/labs/{path}')
 
-        return
-
     async def lab_score_levenshtein(self, lab_id: int, limit: int = None) -> dict:
         db_result = await self.connector.get_lab_score(lab_id, 'levenshtein_check')
         
@@ -44,7 +42,7 @@ class Handler():
             result_sorted = sorted(db_result, key = lambda k: k['score'], reverse = False)
             levenshtein_score = [{'id': result['id'], 'score': result['score']} for result in result_sorted]
         else:
-            check_result = await self.checks.levenshtein_check(False, lab_id)
+            check_result = await self.checks.levenshtein_check(lab_id)
             levenshtein_score = sorted(check_result, key = lambda k: k['score'], reverse = False)
             results = [(item['id'], item['score']) for item in levenshtein_score]
             await self.connector.save_lab_score(lab_id, self.checks.levenshtein_check.__name__, results)
