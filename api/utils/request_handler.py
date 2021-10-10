@@ -9,7 +9,7 @@ from api.utils.sqliteconnector import SQLiteConnector
 from api.utils.checks import Jaccard, Levenshtein
 
 
-class RequestHandler():
+class APIRequestHandler():
 
     def __init__(self) -> None:
         self.connector = SQLiteConnector()

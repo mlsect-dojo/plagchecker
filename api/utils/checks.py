@@ -11,7 +11,7 @@ from models.Jaccard import jaccard
 from models.levenshtein import levenshtein
 
 
-class LabUtils():
+class LabProcessing():
 
     def __init__(self) -> None:
         self.connector = SQLiteConnector()
@@ -47,7 +47,7 @@ class BaseCheck():
 
     def __init__(self) -> None:
         self.connector = SQLiteConnector()
-        self.lab_utils = LabUtils()
+        self.lab_processing = LabProcessing()
         self.base_path = Path(__file__).parent.parent.resolve()
 
     async def check(self, lab_id: int) -> list:
@@ -56,7 +56,7 @@ class BaseCheck():
         if lab_info:
             filename = lab_info['filename']
             lab_path = Path.joinpath(self.base_path,  f'labs/{filename}')
-            code = await self.lab_utils.get_lab_code(lab_path, lab_info['ext'])
+            code = await self.lab_processing.get_lab_code(lab_path, lab_info['ext'])
 
             lab_folder, lab_files = [file for file in os.walk(Path.joinpath(self.base_path, 'labs'))][-1][::2]
             lab_expr = re.compile(r'.*\.(zip){1}$')
@@ -68,7 +68,7 @@ class BaseCheck():
                     comparison_lab_info = await self.connector.get_lab_info_filename(lab_file)
                     if comparison_lab_info['ext'] == lab_info['ext'] and comparison_lab_info['user_id'] != lab_info['user_id']:
 
-                        lab = await self.lab_utils.get_lab_code(Path(lab_folder + '/' + lab_file), comparison_lab_info['ext'])
+                        lab = await self.lab_processing.get_lab_code(Path(lab_folder + '/' + lab_file), comparison_lab_info['ext'])
                         distance = await self.algorithm(code, lab)
                         similars.append({'id': comparison_lab_info['lab_id'], 'score': distance})
 

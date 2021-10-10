@@ -1,10 +1,10 @@
 import uvicorn
 from fastapi import FastAPI, File, UploadFile
 
-from api.utils.request_handler import RequestHandler
+from api.utils.request_handler import APIRequestHandler
 
 server = FastAPI()
-request_handler = RequestHandler()
+request_handler = APIRequestHandler()
 
 @server.put('/lab')
 async def save_lab(user_id: int, ext: str, archive: UploadFile = File(...)):
