@@ -6,10 +6,11 @@ import aiofiles.os
 from fastapi.datastructures import UploadFile
 
 from api.utils.sqliteconnector import SQLiteConnector
-from api.utils.checks import Jaccard, Levenshtein
+from api.utils.scoring.levenshtein import Levenshtein
+from api.utils.scoring.jaccard import Jaccard
 
 
-class APIRequestHandler():
+class LabScoringHandler():
 
     def __init__(self) -> None:
         self.connector = SQLiteConnector()
@@ -24,7 +25,7 @@ class APIRequestHandler():
         filename = f'{uuid.uuid4()}.zip'
         data = archive.file.read()
         
-        async with aiofiles.open(f'{Path(__file__).parent.resolve()}/api/labs/{filename}', 'wb') as file:
+        async with aiofiles.open(f'{Path(__file__).parent.parent.resolve()}/labs/{filename}', 'wb') as file:
             await file.write(data)
 
         lab_id = await self.connector.insert_lab(f'{filename}', user_id, ext)
