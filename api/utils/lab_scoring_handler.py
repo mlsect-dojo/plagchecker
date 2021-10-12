@@ -8,6 +8,7 @@ from fastapi.datastructures import UploadFile
 from api.utils.sqliteconnector import SQLiteConnector
 from api.utils.scoring.levenshtein import Levenshtein
 from api.utils.scoring.jaccard import Jaccard
+from api.utils.scoring.sorensen import Sorensen
 
 
 class LabScoringHandler():
@@ -16,9 +17,11 @@ class LabScoringHandler():
         self.connector = SQLiteConnector()
         self.levenshtein = Levenshtein()
         self.jaccard = Jaccard()
+        self.sorensen = Sorensen()
         self.methods = [
             (self.levenshtein, False),
-            (self.jaccard, True)
+            (self.jaccard, True),
+            (self.sorensen, True)
         ]
 
     async def save_lab(self, user_id: int, ext: str, archive: UploadFile) -> int:
