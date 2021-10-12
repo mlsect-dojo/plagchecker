@@ -1,0 +1,158 @@
+swagger: "2.0"
+info:
+  description: "REST PlagChecker"
+  version: "1.0.0"
+  title: "REST PlagChecker"
+host: "127.0.0.1:5050"
+basePath: "/"
+schemes:
+- "http"
+
+
+tags:
+- name: lab
+- name: algorithms
+
+
+paths:
+
+  /lab:
+    put:
+      tags: 
+      - lab
+      description: "Сохранить лабу на сервере"
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: user_id
+        description: "id автора лабы"
+        in: query
+        type: integer
+        required: true
+      - name: ext
+        description: "расширения языка лабы"
+        in: query
+        type: string
+        required: true
+      - name: archive
+        description: "zip архив с файлами лабы"
+        in: formData
+        type: file
+        required: true
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: "id лабы в системе"
+    
+    delete:
+      tags:
+      - lab
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: lab_id
+        description: "id лабы в системе"
+        in: query
+        type: integer
+        required: true
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              status:
+                default: "OK"
+                   
+  /score/all:
+    get:
+      tags:
+      - algorithms
+      description: "Сравнение всеми реализованными алгоритмами"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: lab_id
+        description: "id лабы в системе"
+        in: query
+        type: integer
+        required: true
+      - name: limit
+        description: "ограничение результатов в выдаче"
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              similars:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    algorithm:
+                      type: string
+                      description: "Название алгоритма"
+                    top:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            description: "id лабы"
+                          score:
+                            type: number
+                            description: "мера схожести"
+                            
+  /score/levenstein:
+    get:
+      tags:
+      - algorithms
+      description: "Сравнение алгоритмом Левенштейна"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: lab_id
+        description: "id лабы в системе"
+        in: query
+        type: integer
+        required: true
+      - name: limit
+        description: "ограничение результатов в выдаче"
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              similars:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "id лабы"
+                    score:
+                      type: number
+                      description: "мера схожести"

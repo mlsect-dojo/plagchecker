@@ -6,14 +6,15 @@
 ## Структура проекта
 
 --------------
+    ├── api/                <- Webserver methods code
     ├── data/               <- The final, canonical data sets for modeling.
     ├── docs/               <- Specifications and papers
-    ├── http_utils/         <- Webserver methods code
     ├── models/             <- Trained and serialized models, model sources
-    ├── test                <- Models tests
-    ├── requirements.txt    <- The requirements file for reproducing the analysis environment
+    ├── tests/              <- Models tests
+    ├── Pipfile             <- Pipfile for the project
     ├── LICENSE
     ├── README.md           <- The top-level README for developers using this project.
+    ├── server.py           <- Web server
 --------------
 
 

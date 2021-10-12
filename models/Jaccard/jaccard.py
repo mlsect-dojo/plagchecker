@@ -6,5 +6,3 @@ def JaccardIndex(str1 : str, str2 : str) -> float:
     str2 = set(str2)
     shared = str1.intersection(str2)
     return len(shared) / len(str1.union(str2))
-
-
