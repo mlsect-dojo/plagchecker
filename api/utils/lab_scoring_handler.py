@@ -6,18 +6,18 @@ import aiofiles.os
 from fastapi.datastructures import UploadFile
 
 from api.utils.sqliteconnector import SQLiteConnector
-from api.utils.scoring.levenshtein import Levenshtein
-from api.utils.scoring.jaccard import Jaccard
-from api.utils.scoring.sorensen import Sorensen
+from api.utils.scoring.levenshtein import LevenshteinScore
+from api.utils.scoring.jaccard import JaccardScore
+from api.utils.scoring.sorensen import SorensenScore
 
 
 class LabScoringHandler():
 
     def __init__(self) -> None:
         self.connector = SQLiteConnector()
-        self.levenshtein = Levenshtein()
-        self.jaccard = Jaccard()
-        self.sorensen = Sorensen()
+        self.levenshtein = LevenshteinScore()
+        self.jaccard = JaccardScore()
+        self.sorensen = SorensenScore()
         self.methods = [
             (self.levenshtein, False),
             (self.jaccard, True),

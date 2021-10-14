@@ -1,10 +1,12 @@
 from api.utils.scoring.base_check import BaseCheck
-from models.levenshtein import levenshtein
+from models.levenshtein import Levenshtein
 
-class Levenshtein(BaseCheck):
 
-    async def algorithm(self, code: str, lab: str) -> float:
-        return levenshtein.distance(code, lab)
+class LevenshteinScore(BaseCheck):
 
+    def __init__(self) -> None:
+        self.levenshtein = Levenshtein()
+        super().__init__(self.levenshtein.comparison)
+        
     def name(self) -> str:
-        return self.__class__.__name__.lower()
+        return self.__class__.__name__.lower()[:-5]

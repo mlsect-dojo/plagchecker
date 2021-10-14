@@ -1,5 +1,5 @@
 import unittest
-from sorensens_dice import comparison
+from models.sorensen.sorensens_dice import comparison
 
 
 class TestComparison(unittest.TestCase):

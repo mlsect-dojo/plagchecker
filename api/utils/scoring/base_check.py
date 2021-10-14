@@ -4,14 +4,16 @@ import re
 
 from api.utils.sqliteconnector import SQLiteConnector
 from api.utils.lab_processing import LabProcessing
+from models.base_algorithm import BaseAlgorithm
 
 
 class BaseCheck():
 
-    def __init__(self) -> None:
+    def __init__(self, comparison_method: BaseAlgorithm.comparison) -> None:
         self.connector = SQLiteConnector()
         self.lab_processing = LabProcessing()
         self.base_path = Path(__file__).parent.parent.parent.resolve()
+        self.comparison_method = comparison_method
 
     async def check(self, lab_id: int) -> list:
         lab_info = await self.connector.get_lab_info_id(lab_id)
@@ -28,7 +30,6 @@ class BaseCheck():
 
             for lab_file in lab_files:
                 if lab_expr.match(lab_file) and lab_file != filename:
-                    print(lab_folder, lab_file)
                     comparison_lab_info = await self.connector.get_lab_info_filename(lab_file)
                     if comparison_lab_info['ext'] == lab_info['ext'] and comparison_lab_info['user_id'] != lab_info['user_id']:
 
@@ -42,7 +43,7 @@ class BaseCheck():
             return []
 
     async def algorithm(self, code: str, lab: str) -> float:
-        raise NotImplementedError
+        return self.comparison_method(code, lab)
 
     def name(self) -> str:
         raise NotImplementedError
