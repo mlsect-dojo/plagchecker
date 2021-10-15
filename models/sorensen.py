@@ -15,3 +15,6 @@ class Sorensen(BaseAlgorithm):
             return 1.0
 
         return 2 * number_intersections / (len(str1_set) + len(str2_set))
+
+    def name(self) -> str:
+        return self.__class__.__name__.lower()

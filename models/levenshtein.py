@@ -23,4 +23,6 @@ class Levenshtein(BaseAlgorithm):
                 current_row[j] = min(add, delete, change)
 
         return current_row[n]
-        
+
+    def name(self) -> str:
+        return self.__class__.__name__.lower()
