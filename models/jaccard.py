@@ -11,6 +11,3 @@ class Jaccard(BaseAlgorithm):
         shared = str1_set.intersection(str2_set)
 
         return len(shared) / len(str1_set.union(str2_set))
-
-    def name(self) -> str:
-        return self.__class__.__name__.lower()

@@ -15,6 +15,9 @@ class BaseAlgorithm():
             similars.append({'id': lab['id'], 'score': distance})
 
         return similars
+    
+    def name(self) -> str:
+        return self.__class__.__name__.lower()
 
     def comparison(self, str1: str, str2: str) -> float:
         raise NotImplementedError

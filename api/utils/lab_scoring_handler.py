@@ -20,6 +20,7 @@ class LabScoringHandler():
             (Jaccard(), True),
             (Sorensen(), True)
         ]
+        #The boolean is used to determine the order of comparison results
 
     async def save_lab(self, user_id: int, ext: str, archive: UploadFile) -> int:
         filename = f'{uuid.uuid4()}.zip'
