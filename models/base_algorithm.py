@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 from api.utils.lab_processing import LabProcessing
 
 
@@ -6,7 +8,7 @@ class BaseAlgorithm():
     def __init__(self) -> None:
         self.lab_processing = LabProcessing()
 
-    async def check(self, lab_id: int):
+    async def check(self, lab_id: int) -> List[Dict[int, str]]:
         labs = await self.lab_processing.get_labs(lab_id)
         similars = []
 
