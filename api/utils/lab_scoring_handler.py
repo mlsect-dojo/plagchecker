@@ -6,26 +6,28 @@ import aiofiles.os
 from fastapi.datastructures import UploadFile
 
 from api.utils.sqliteconnector import SQLiteConnector
-from api.utils.scoring.levenshtein import Levenshtein
-from api.utils.scoring.jaccard import Jaccard
+from models.levenshtein import Levenshtein
+from models.jaccard import Jaccard
+from models.sorensen import Sorensen
 
 
 class LabScoringHandler():
 
     def __init__(self) -> None:
         self.connector = SQLiteConnector()
-        self.levenshtein = Levenshtein()
-        self.jaccard = Jaccard()
+        self.base_path = Path(__file__).parent.parent.resolve()
         self.methods = [
-            (self.levenshtein, False),
-            (self.jaccard, True)
+            (Levenshtein(), False),
+            (Jaccard(), True),
+            (Sorensen(), True)
         ]
+        #The boolean is used to determine the order of comparison results
 
     async def save_lab(self, user_id: int, ext: str, archive: UploadFile) -> int:
         filename = f'{uuid.uuid4()}.zip'
         data = archive.file.read()
         
-        async with aiofiles.open(f'{Path(__file__).parent.parent.resolve()}/labs/{filename}', 'wb') as file:
+        async with aiofiles.open(Path.joinpath(self.base_path, f'labs/{filename}'), 'wb') as file:
             await file.write(data)
 
         lab_id = await self.connector.insert_lab(f'{filename}', user_id, ext)
@@ -35,7 +37,7 @@ class LabScoringHandler():
         path = await self.connector.delete_lab(lab_id)
 
         if path:
-            await aiofiles.os.remove(f'{Path(__file__).parent.resolve()}/api/labs/{path}')
+            await aiofiles.os.remove(Path.joinpath(self.base_path, f'labs/{path}'))
 
     async def lab_score_levenshtein(self, lab_id: int, limit: int = None) -> dict:
         db_result = await self.connector.get_lab_score(lab_id, self.levenshtein.name())

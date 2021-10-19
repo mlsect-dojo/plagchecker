@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 from typing import Union
 
 import aiosqlite
@@ -7,7 +7,7 @@ import aiosqlite
 class SQLiteConnector():
 
     def __init__(self) -> None:
-        self.db_path = f'{pathlib.Path(__file__).parent.parent.resolve()}/plagchecker.db'
+        self.db_path = Path.joinpath(Path(__file__).parent.parent.resolve(), 'plagchecker.db')
 
     async def insert_lab(self, filename: str, user_id: int, ext: str) -> int:
         async with aiosqlite.connect(self.db_path) as db:

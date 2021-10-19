@@ -3,6 +3,7 @@ from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 import re
 import os
+from typing import List, Tuple, Union, Dict
 
 import aiofiles
 
@@ -40,3 +41,35 @@ class LabProcessing():
         await self.cleanup_archive(archive_dir)
 
         return code
+
+    async def get_comparison_lab(self, lab_file: str, lab_folder: str, lab_info: dict) -> Union[Dict[int, str], None]:
+        comparison_lab_info = await self.connector.get_lab_info_filename(lab_file)
+        if comparison_lab_info['ext'] == lab_info['ext'] and comparison_lab_info['user_id'] != lab_info['user_id']:
+            lab_code = await self.get_lab_code(Path(lab_folder + '/' + lab_file), comparison_lab_info['ext'])
+            return {'id': comparison_lab_info['lab_id'], 'code': lab_code}
+
+        return None
+
+    async def get_labs(self, lab_id: int) -> List[Tuple[str, Dict[int, str]]]:
+        lab_info = await self.connector.get_lab_info_id(lab_id)
+
+        if lab_info:
+            results = []
+
+            filename = lab_info['filename']
+            lab_path = Path.joinpath(self.base_path,  f'labs/{filename}')
+            code = await self.get_lab_code(lab_path, lab_info['ext'])
+
+            lab_folder, lab_files = [file for file in os.walk(Path.joinpath(self.base_path, 'labs'))][-1][::2]
+            lab_expr = re.compile(r'.*\.(zip){1}$')
+
+            for lab_file in lab_files:
+                if lab_expr.match(lab_file) and lab_file != filename:
+                    comparison_lab = await self.get_comparison_lab(lab_file, lab_folder, lab_info)
+                    if comparison_lab:
+                        results.append((code, comparison_lab))
+
+            return results
+
+        else:
+            return []
