@@ -15,6 +15,7 @@ class LabScoringHandler():
 
     def __init__(self) -> None:
         self.connector = SQLiteConnector()
+        self.base_path = Path(__file__).parent.parent.resolve()
         self.methods = [
             (Levenshtein(), False),
             (Jaccard(), True),
@@ -26,7 +27,7 @@ class LabScoringHandler():
         filename = f'{uuid.uuid4()}.zip'
         data = archive.file.read()
         
-        async with aiofiles.open(f'{Path(__file__).parent.parent.resolve()}/labs/{filename}', 'wb') as file:
+        async with aiofiles.open(Path.joinpath(self.base_path, f'labs/{filename}'), 'wb') as file:
             await file.write(data)
 
         lab_id = await self.connector.insert_lab(f'{filename}', user_id, ext)
@@ -36,7 +37,7 @@ class LabScoringHandler():
         path = await self.connector.delete_lab(lab_id)
 
         if path:
-            await aiofiles.os.remove(f'{Path(__file__).parent.resolve()}/api/labs/{path}')
+            await aiofiles.os.remove(Path.joinpath(self.base_path, f'labs/{path}'))
 
     async def lab_score_levenshtein(self, lab_id: int, limit: int = None) -> dict:
         db_result = await self.connector.get_lab_score(lab_id, self.levenshtein.name())
